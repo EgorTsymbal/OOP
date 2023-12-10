@@ -1,0 +1,281 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+
+class Country {
+public:
+    std::string name;
+    int activityStars;
+    int hotelStars;
+
+    Country(const std::string& n, int actStars, int hotStars)
+        : name(n), activityStars(actStars), hotelStars(hotStars) {}
+};
+
+class Transportation {
+public:
+    std::string name;
+    int costMultiplier;
+
+    Transportation(const std::string& n, int multiplier)
+        : name(n), costMultiplier(multiplier) {}
+};
+
+class Accommodation {
+public:
+    int stars;
+    int cost;
+
+    Accommodation(int s, int c) : stars(s), cost(c) {}
+};
+
+class PaymentMethod {
+public:
+    std::string name;
+
+    PaymentMethod(const std::string& n) : name(n) {}
+};
+
+class Order {
+public:
+    Country country;
+    int numberOfPeople;
+    Transportation transportation;
+    Accommodation accommodation;
+    PaymentMethod paymentMethod;
+
+    Order(const Country& c, int numPeople, const Transportation& trans, const Accommodation& accom, const PaymentMethod& method)
+        : country(c), numberOfPeople(numPeople), transportation(trans), accommodation(accom), paymentMethod(method) {}
+};
+
+void activeRecreationFunction();
+void relaxTourFunction();
+void travelFunction();
+
+void selectCountry(const std::vector<Country>& countries, Order& order);
+void selectNumberOfPeople(Order& order);
+void selectTransportation(const std::vector<Transportation>& transportations, Order& order);
+void selectAccommodation(const std::vector<Accommodation>& accommodations, Order& order);
+void selectPaymentMethod(const std::vector<PaymentMethod>& paymentMethods, Order& order);
+void displayOrder(const Order& order);
+void enterCreditCard();
+
+Menu mainMenu("Меню", {});
+
+TextMenuItem activeRecreationItem("Активный отдых", activeRecreationFunction);
+TextMenuItem relaxTourItem("Релакс-тур", relaxTourFunction);
+TextMenuItem travelItem("Путешествие", travelFunction);
+
+void mainMenu() {
+    mainMenu.run();
+}
+
+int main() {
+    mainMenu();
+    return 0;
+}
+
+void activeRecreationFunction() {
+    std::cout << "Выбран Активный отдых!" << std::endl;
+
+    std::vector<Country> countries = {{"Страна 1", 3, 3}, {"Страна 2", 3, 4}, {"Страна 3", 3, 5}};
+
+    Order order(countries[0], 1, {"Самолет", 2}, {3, 100}, {"Онлайн"});
+    selectCountry(countries, order);
+}
+
+void relaxTourFunction() {
+    std::cout << "Выбран Релакс-тур!" << std::endl;
+
+    std::vector<Country> countries = {{"Страна 4", 4, 4}, {"Страна 5", 4, 5}, {"Страна 6", 4, 5}};
+
+    Order order(countries[0], 1, {"Самолет", 2}, {4, 150}, {"Тур-центр"});
+    selectCountry(countries, order);
+}
+
+void travelFunction() {
+    std::cout << "Выбрано Путешествие!" << std::endl;
+
+    std::vector<Country> countries = {{"Страна 7", 5, 5}, {"Страна 8", 5, 5}, {"Страна 9", 5, 5}};
+
+    Order order(countries[0], 1, {"Самолет", 2}, {5, 200}, {"Онлайн"});
+    selectCountry(countries, order);
+}
+
+void selectCountry(const std::vector<Country>& countries, Order& order) {
+    int choice;
+    do {
+        std::cout << "Выберите страну:" << std::endl;
+        for (std::size_t i = 0; i < countries.size(); ++i) {
+            std::cout << i + 1 << ". " << countries[i].name << std::endl;
+        }
+        std::cout << "0. Назад" << std::endl;
+        std::cin >> choice;
+
+        if (choice > 0 && choice <= static_cast<int>(countries.size())) {
+            order.country = countries[choice - 1];
+            selectNumberOfPeople(order);
+        } else if (choice != 0) {
+            std::cout << "Некорректный выбор. Повторите попытку." << std::endl;
+        }
+
+    } while (choice != 0);
+}
+
+void selectNumberOfPeople(Order& order) {
+    int choice;
+    do {
+        std::cout << "Введите количество человек (от 1 до 5): ";
+        std::cin >> choice;
+
+        if (choice >= 1 && choice <= 5) {
+            order.numberOfPeople = choice;
+            selectTransportation({{"Самолет", 2}, {"Поезд", 1}, {"Автобус", 0.8}, {"По воде", 1.5}}, order);
+        } else {
+            std::cout << "Некорректный ввод. Повторите попытку." << std::endl;
+        }
+
+    } while (choice < 1 || choice > 5);
+}
+
+void selectTransportation(const std::vector<Transportation>& transportations, Order& order) {
+    int choice;
+    do {
+        std::cout << "Выберите способ передвижения:" << std::endl;
+        for (std::size_t i = 0; i < transportations.size(); ++i) {
+            std::cout << i + 1 << ". " << transportations[i].name << std::endl;
+        }
+        std::cout << "0. Назад" << std::endl;
+        std::cin >> choice;
+
+        if (choice > 0 && choice <= static_cast<int>(transportations.size())) {
+            order.transportation = transportations[choice - 1];
+            selectAccommodation({{2, 50}, {3, 100}, {4, 150}, {5, 200}}, order);
+        } else if (choice != 0) {
+            std::cout << "Некорректный выбор. Повторите попытку." << std::endl;
+        }
+
+    } while (choice != 0);
+}
+
+void selectAccommodation(const std::vector<Accommodation>& accommodations, Order& order) {
+    int choice;
+    do {
+        std::cout << "Выберите условия проживания:" << std::endl;
+        for (std::size_t i = 0; i < accommodations.size(); ++i) {
+            std::cout << i + 1 << ". " << accommodations[i].stars << "-звездный отель за " << accommodations[i].cost << " долларов в сутки" << std::endl;
+        }
+        std::cout << "0. Назад" << std::endl;
+        std::cin >> choice;
+
+        if (choice > 0 && choice <= static_cast<int>(accommodations.size())) {
+            order.accommodation = accommodations[choice - 1];
+            selectPaymentMethod({{"Онлайн"}, {"В тур-центре"}}, order);
+        } else if (choice != 0) {
+            std::cout << "Некорректный выбор. Повторите попытку." << std::endl;
+        }
+
+    } while (choice != 0);
+}
+
+void selectPaymentMethod(const std::vector<PaymentMethod>& paymentMethods, Order& order) {
+    int choice;
+    do {
+        std::cout << "Выберите метод оплаты:" << std::endl;
+        for (std::size_t i = 0; i < paymentMethods.size(); ++i) {
+            std::cout << i + 1 << ". " << paymentMethods[i].name << std::endl;
+        }
+        std::cout << "0. Назад" << std::endl;
+        std::cin >> choice;
+
+        if (choice > 0 && choice <= static_cast<int>(paymentMethods.size())) {
+            order.paymentMethod = paymentMethods[choice - 1];
+            displayOrder(order);
+        } else if (choice != 0) {
+            std::cout << "Некорректный выбор. Повторите попытку." << std::endl;
+        }
+
+    } while (choice != 0);
+}
+
+void displayOrder(const Order& order) {
+    std::cout << "Итоговый заказ:" << std::endl;
+    std::cout << "Страна: " << order.country.name << std::endl;
+    std::cout << "Количество человек: " << order.numberOfPeople << std::endl;
+    std::cout << "Способ передвижения: " << order.transportation.name << std::endl;
+    std::cout << "Условия проживания: " << order.accommodation.stars << "-звездный отель за " << order.accommodation.cost << " долларов в сутки" << std::endl;
+    std::cout << "Метод оплаты: " << order.paymentMethod.name << std::endl;
+
+    int totalCost = order.accommodation.cost * order.numberOfPeople * order.transportation.costMultiplier;
+    std::cout << "Общая стоимость: " << totalCost << " долларов" << std::endl;
+
+    if (order.paymentMethod.name == "Онлайн") {
+        enterCreditCard();
+    } else if (order.paymentMethod.name == "В тур-центре") {
+        std::string arrivalDate;
+        std::cout << "Выберите дату прихода (сегодня, завтра, послезавтра): ";
+        std::cin >> arrivalDate;
+        std::cout << "Дата прихода: " << arrivalDate << std::endl;
+    }
+
+    std::cout << "Удачного путешествия!" << std::endl;
+    mainMenu.run();
+}
+
+void enterCreditCard() {
+    std::string creditCardNumber;
+    std::cout << "Введите номер карты: ";
+    std::cin >> creditCardNumber;
+    std::cout << "Оплата прошла успешно. Спасибо за покупку!" << std::endl;
+}
+
+void finalizeOrder(const Order& order) {
+    std::cout << "Итоговый заказ:" << std::endl;
+    std::cout << "Страна: " << order.country.name << std::endl;
+    std::cout << "Количество человек: " << order.numberOfPeople << std::endl;
+    std::cout << "Способ передвижения: " << order.transportation.name << std::endl;
+    std::cout << "Условия проживания: " << order.accommodation.stars << "-звездный отель за " << order.accommodation.cost << " долларов в сутки" << std::endl;
+    std::cout << "Метод оплаты: " << order.paymentMethod.name << std::endl;
+
+    int totalCost = order.accommodation.cost * order.numberOfPeople * order.transportation.costMultiplier;
+    std::cout << "Общая стоимость: " << totalCost << " долларов" << std::endl;
+
+    std::cout << "Оплата прошла успешно. Спасибо за покупку!" << std::endl;
+
+    // Дополнительные шаги, если необходимо
+
+    // Здесь можно добавить логику для отправки подтверждения заказа или другие действия.
+
+    std::cout << "Удачного путешествия!" << std::endl;
+
+    // Возвращение в главное меню для нового заказа
+    mainMenu.run();
+}
+
+void enterCreditCard() {
+    std::string creditCardNumber;
+    std::cout << "Введите номер карты: ";
+    std::cin >> creditCardNumber;
+
+    // Проверка номера карты или другие дополнительные действия, если необходимо
+
+    // Завершение заказа
+    finalizeOrder(order);
+}
+
+int main() {
+    // Создание пунктов меню для каждого направления
+    TextMenuItem activeRecreationItem("Активный отдых", activeRecreationFunction);
+    TextMenuItem relaxTourItem("Релакс-тур", relaxTourFunction);
+    TextMenuItem travelItem("Путешествие", travelFunction);
+
+    // Создание основного меню с направлениями
+    Menu mainMenu("Меню", {&activeRecreationItem, &relaxTourItem, &travelItem});
+
+    // Запуск основного меню
+    mainMenu.run();
+
+    return 0;
+}
+
