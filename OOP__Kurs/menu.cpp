@@ -36,6 +36,9 @@ public:
     void displayDetails() const override {
         system("cls");
         cout << "Pizza Details:" << endl;
+        cout << "1. View Price" << endl;
+        cout << "2. View Composition" << endl;
+        cout << "3. Back to Main Menu" << endl;
     }
 };
 
@@ -46,6 +49,9 @@ public:
     void displayDetails() const override {
         system("cls");
         cout << "Burger Details:" << endl;
+        cout << "1. View Price" << endl;
+        cout << "2. View Composition" << endl;
+        cout << "3. Back to Main Menu" << endl;
     }
 };
 
@@ -56,38 +62,15 @@ public:
     void displayDetails() const override {
         system("cls");
         cout << "Pasta Details:" << endl;
+        cout << "1. View Price" << endl;
+        cout << "2. View Composition" << endl;
+        cout << "3. Back to Main Menu" << endl;
     }
 };
 
-class Menu {
-private:
-    vector<MenuItem*> menuItems;
+void showMenu(const vector<MenuItem*>& menu, int selectedOption);
 
-public:
-    Menu(const vector<MenuItem*>& items) : menuItems(items) {}
-
-    void showMenu(int selectedOption) const {
-        system("cls"); // clear the screen
-
-        cout << "Main Menu:" << endl;
-        for (size_t i = 0; i < menuItems.size(); ++i) {
-            cout << (i == selectedOption ? "> " : "  ") << menuItems[i]->getName() << endl;
-        }
-        cout << "Exit" << endl;
-    }
-
-    vector<MenuItem*>& getMenuItems() {
-        return menuItems;
-    }
-
-    ~Menu() {
-        for (size_t i = 0; i < menuItems.size(); ++i) {
-            delete menuItems[i];
-        }
-    }
-};
-
-void showSubMenu(MenuItem* item, int subMenuOption);
+void showSubMenu(MenuItem* item);
 
 int main() {
     vector<MenuItem*> menu;
@@ -95,49 +78,62 @@ int main() {
     menu.push_back(new Burger());
     menu.push_back(new Pasta());
 
-    Menu mainMenu(menu);
-
     int selectedOption = 0;
-    int subMenuOption = 1;
     char key;
 
     do {
-        mainMenu.showMenu(selectedOption);
+        showMenu(menu, selectedOption);
 
         key = _getch(); // wait for a key press without displaying it
 
         switch (key) {
             case 72: // up arrow key
-                selectedOption = (selectedOption > 0) ? selectedOption - 1 : mainMenu.getMenuItems().size() - 1;
+                selectedOption = (selectedOption > 0) ? selectedOption - 1 : menu.size() - 1;
                 break;
             case 80: // down arrow key
-                selectedOption = (selectedOption < mainMenu.getMenuItems().size() - 1) ? selectedOption + 1 : 0;
+                selectedOption = (selectedOption < menu.size() - 1) ? selectedOption + 1 : 0;
                 break;
             case 13: // Enter key
-                showSubMenu(mainMenu.getMenuItems()[selectedOption], subMenuOption);
+                showSubMenu(menu[selectedOption]);
                 break;
         }
 
     } while (key != 27); // continue loop until Esc is pressed
 
-    return 0;
+// Clean up memory
+for (size_t i = 0; i < menu.size(); ++i) {
+    delete menu[i];
+}
+
+return 0;
+
+}
+
+void showMenu(const vector<MenuItem*>& menu, int selectedOption) {
+    system("cls"); // clear the screen
+
+    cout << "Main Menu:" << endl;
+    for (size_t i = 0; i < menu.size(); ++i) {
+        cout << (i == selectedOption ? "> " : "  ") << menu[i]->getName() << endl;
+    }
+    cout << "Exit" << endl;
 }
 
 void showSubMenu(MenuItem* item, int subMenuOption) {
     char key;
-    const string subMenuOptions[] = {"View Price", "View Composition", "Back to Main Menu"};
 
     do {
-        system("cls");
+        system("cls"); // clear the screen
 
         item->displayDetails();
 
         cout << "\nSub Menu:" << endl;
-        for (int i = 0; i < 3; ++i) {
-            cout << (i + 1 == subMenuOption ? "> " : "  ") << subMenuOptions[i] << endl;
+        for (int i = 1; i <= 3; ++i) {
+            cout << (i == subMenuOption ? "> " : "  ") << "Option " << i << endl;
         }
+        cout << "Back to Main Menu" << endl;
 
-        key = _getch();
+        key = _getch(); // wait for a key press without displaying it
 
         switch (key) {
             case 72: // up arrow key
@@ -169,5 +165,5 @@ void showSubMenu(MenuItem* item, int subMenuOption) {
                 break;
         }
 
-    } while (key != 27 && subMenuOption != 3);
+    } while (key != 27 && subMenuOption != 3); // continue loop until Esc is pressed or Back to Main Menu is selected
 }
