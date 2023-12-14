@@ -4,24 +4,6 @@
 
 using namespace std;
 
-// Класс, представляющий размер напитка
-class BeverageSize {
-public:
-    enum Size { SMALL, MEDIUM, LARGE };
-
-    // Конструктор с установкой размера
-    BeverageSize(Size size) : size(size) {}
-
-    // Получение размера
-    Size getSize() const {
-        return size;
-    }
-
-private:
-    Size size;
-};
-
-// Базовый класс для элементов меню
 class MenuItem {
 public:
     MenuItem(const string& name) : name(name) {}
@@ -38,7 +20,6 @@ protected:
     string name;
 };
 
-// Класс для блюд
 class Dish : public MenuItem {
 public:
     Dish(const string& name, float price, const string& composition)
@@ -75,7 +56,6 @@ private:
     string composition;
 };
 
-// Класс для кофе
 class Coffee : public MenuItem {
 public:
     Coffee(const string& name, float price) : MenuItem(name), price(price) {}
@@ -96,16 +76,16 @@ public:
 
         switch (choice) {
             case 1:
-                showCoffeeDetails("Латте", "Молоко, кофе", 150.0);
+                showCoffeeDetails("Латте", "Молоко, кофе", 150.0); // Передаю фиксированную цену для латте
                 break;
             case 2:
-                showCoffeeDetails("Капучино", "Молоко, кофе", 120.0);
+                showCoffeeDetails("Капучино", "Молоко, кофе", 120.0); // Передаю фиксированную цену для капучино
                 break;
             case 3:
-                showCoffeeDetails("Американо", "Кофе, вода", 100.0);
+                showCoffeeDetails("Американо", "Кофе, вода", 100.0); // Передаю фиксированную цену для американо
                 break;
             case 4:
-                showCoffeeDetails("Эспрессо", "Кофе", 80.0);
+                showCoffeeDetails("Эспрессо", "Кофе", 80.0); // Передаю фиксированную цену для эспрессо
                 break;
             case 9:
                 break;
@@ -116,8 +96,6 @@ public:
 
 private:
     float price;
-    string coffeeType;
-    string composition;
 
     void showCoffeeDetails(const string& coffeeType, const string& composition, float coffeePrice) const {
         cout << "Вы выбрали " << coffeeType << ": " << endl;
@@ -126,7 +104,6 @@ private:
     }
 };
 
-// Класс для напитков
 class Drink : public MenuItem {
 public:
     Drink(const string& name, float price, const string& composition)
@@ -141,7 +118,6 @@ public:
         cout << "Выберите опцию для напитка '" << name << "': " << endl;
         cout << "1. Узнать цену" << endl;
         cout << "2. Узнать состав" << endl;
-        cout << "3. Добавить лёд" << endl;
         cout << "9. Вернуться в главное меню" << endl;
         cin >> choice;
 
@@ -152,45 +128,10 @@ public:
             case 2:
                 cout << "Состав напитка '" << name << "': " << composition << endl;
                 break;
-            case 3:
-                addIce();
-                break;
             case 9:
                 break;
             default:
                 cout << "Некорректный выбор." << endl;
-        }
-    }
-
-    // Перегруженный метод с учетом размера напитка
-    void action(const BeverageSize& size) const {
-        action();
-        displaySize(size);
-    }
-
-    void addIce() const {
-        char answer;
-        cout << "Хотите добавить лёд? (y/n): ";
-        cin >> answer;
-        if (answer == 'y' || answer == 'Y') {
-            cout << "Лёд добавлен." << endl;
-        } else {
-            cout << "Без льда." << endl;
-        }
-    }
-
-    void displaySize(const BeverageSize& size) const {
-        cout << "Выбран размер: ";
-        switch (size.getSize()) {
-            case BeverageSize::SMALL:
-                cout << "Маленький" << endl;
-                break;
-            case BeverageSize::MEDIUM:
-                cout << "Средний" << endl;
-                break;
-            case BeverageSize::LARGE:
-                cout << "Большой" << endl;
-                break;
         }
     }
 
@@ -199,7 +140,6 @@ private:
     string composition;
 };
 
-// Класс для подменю
 class SubMenu : public MenuItem {
 public:
     SubMenu(const string& name) : MenuItem(name) {}
@@ -235,13 +175,7 @@ public:
             cin >> choice;
 
             if (choice >= 1 && choice <= items.size()) {
-                // Условие для Drink с размером
-                if (auto* drink = dynamic_cast<Drink*>(items[choice - 1])) {
-                    BeverageSize::Size sizeChoice = chooseSize();
-                    drink->action(BeverageSize(sizeChoice));
-                } else {
-                    items[choice - 1]->action();
-                }
+                items[choice - 1]->action();
             }
         } while (choice != 0);
     }
@@ -254,34 +188,13 @@ public:
 
 private:
     vector<MenuItem*> items;
-
-    BeverageSize::Size chooseSize() const {
-        int sizeChoice;
-        cout << "Выберите размер: " << endl;
-        cout << "1. Маленький" << endl;
-        cout << "2. Средний" << endl;
-        cout << "3. Большой" << endl;
-        cin >> sizeChoice;
-
-        switch (sizeChoice) {
-            case 1:
-                return BeverageSize::SMALL;
-            case 2:
-                return BeverageSize::MEDIUM;
-            case 3:
-                return BeverageSize::LARGE;
-            default:
-                cout << "Некорректный выбор. Размер установлен как Средний." << endl;
-                return BeverageSize::MEDIUM;
-        }
-    }
 };
 
 int main() {
     SubMenu mainMenu("Главное меню");
 
     Dish* dish1 = new Dish("Стейк", 1000.0, "Говядина, специи");
-    Dish* dish2 = new Dish("Салат Цезарь", 500.0, "Курица, салат");
+    Dish* dish2 = new Dish("Салат Цезарь", 500.0, "Курица, салат, соус Цезарь");
     Dish* dish3 = new Dish("Пицца Маргарита", 800.0, "Тесто, помидоры, сыр");
     Dish* pasta = new Dish("Паста", 700.0, "Макароны, соус болоньезе");
     Dish* fishDish = new Dish("Рыбное блюдо", 900.0, "Рыба, приправы");
@@ -306,6 +219,8 @@ int main() {
     mainMenu.addMenuItem(drink2);
 
     mainMenu.action();
+
+//перегрузка методов, реализация удаления (в удалении исключение)
 
     return 0;
 }

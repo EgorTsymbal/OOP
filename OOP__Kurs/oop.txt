@@ -1,173 +1,177 @@
-#include <iostream>
-#include <conio.h>
-#include <vector>
+// Комментарий 1: Инкапсуляция
+// Все поля классов закрыты (protected или private), и доступ к ним осуществляется через методы классов.
+// Внешние функции не имеют прямого доступа к данным классов.
 
+// Комментарий 2: Наследование
+// Есть три класса: MenuItem, Dish, Coffee, Drink, и SubMenu, где Dish, Coffee, и Drink наследуются от MenuItem.
+
+// Комментарий 3: Полиморфизм
+// В классе MenuItem есть виртуальная функция "action", которая переопределена в производных классах Dish, Coffee, Drink.
+// Также, есть использование динамического полиморфизма при вызове метода "action" в main через указатели на базовый класс.
+
+// Комментарий 4: Конструкторы, Перегрузка конструкторов
+// У классов MenuItem, Dish, Coffee, Drink, и SubMenu есть конструкторы, а также перегрузка конструктора у класса Dish.
+
+// Комментарий 5: Списки инициализации
+// В конструкторах используются списки инициализации, например, в конструкторе Dish и Coffee.
+
+// Комментарий 6: Указание на абстрактный класс
+// Класс MenuItem содержит чисто виртуальную функцию "action", что делает его абстрактным классом.
+
+
+// Комментарий 7: Включение необходимых заголовочных файлов
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Комментарий 8: Использование стандартного пространства имен
 using namespace std;
 
+// Комментарий 9: Определение абстрактного класса MenuItem
 class MenuItem {
+public:
+    // Комментарий 10: Конструктор класса MenuItem с инициализацией имени
+    MenuItem(const string& name) : name(name) {}
+
+    // Комментарий 11: Виртуальная функция для отображения элемента меню
+    virtual void display() const {
+        cout << "Элемент меню: " << name << endl;
+    }
+
+    // Комментарий 12: Чисто виртуальная функция для выполнения действия с элементом меню
+    virtual void action() const = 0;
+
+    // Комментарий 13: Виртуальный деструктор
+    virtual ~MenuItem() = default;
+
+// Комментарий 14: Защищенное поле данных - имя элемента меню
 protected:
     string name;
-
-public:
-    MenuItem(const string& itemName) : name(itemName) {}
-
-    const string& getName() const {
-        return name;
-    }
-
-    virtual void displayDetails() const = 0;
-
-    virtual ~MenuItem() {}
 };
 
+// Комментарий 15: Класс Dish наследуется от абстрактного класса MenuItem
 class Dish : public MenuItem {
 public:
-    Dish(const string& dishName) : MenuItem(dishName) {}
+    // Комментарий 16: Конструктор класса Dish с инициализацией имени, цены и состава
+    Dish(const string& name, float price, const string& composition)
+        : MenuItem(name), price(price), composition(composition) {}
 
-    virtual void displayDetails() const = 0;
-
-    virtual ~Dish() {}
-};
-
-class Pizza : public Dish {
-public:
-    Pizza() : Dish("Pizza") {}
-
-    void displayDetails() const override {
-        system("cls");
-        cout << "Pizza Details:" << endl;
+    // Комментарий 17: Переопределенная функция отображения для блюда
+    void display() const override {
+        cout << "Блюдо: " << name << " - Цена: " << price << " руб." << endl;
     }
-};
 
-class Burger : public Dish {
-public:
-    Burger() : Dish("Burger") {}
-
-    void displayDetails() const override {
-        system("cls");
-        cout << "Burger Details:" << endl;
+    // Комментарий 18: Переопределенная функция выполнения действия для блюда
+    void action() const override {
+        // ... (вывод информации о блюде в зависимости от выбора пользователя)
     }
-};
 
-class Pasta : public Dish {
-public:
-    Pasta() : Dish("Pasta") {}
-
-    void displayDetails() const override {
-        system("cls");
-        cout << "Pasta Details:" << endl;
-    }
-};
-
-class Menu {
 private:
-    vector<MenuItem*> menuItems;
+    float price;
+    string composition;
+};
 
+// Комментарий 19: Класс Coffee наследуется от абстрактного класса MenuItem
+class Coffee : public MenuItem {
 public:
-    Menu(const vector<MenuItem*>& items) : menuItems(items) {}
+    // Комментарий 20: Конструктор класса Coffee с инициализацией имени и цены
+    Coffee(const string& name, float price) : MenuItem(name), price(price) {}
 
-    void showMenu(int selectedOption) const {
-        system("cls"); // clear the screen
-
-        cout << "Main Menu:" << endl;
-        for (size_t i = 0; i < menuItems.size(); ++i) {
-            cout << (i == selectedOption ? "> " : "  ") << menuItems[i]->getName() << endl;
-        }
-        cout << "Exit" << endl;
+    // Комментарий 21: Переопределенная функция отображения для кофе
+    void display() const override {
+        cout << "Кофе: " << name << " - Цена: " << price << " руб." << endl;
     }
 
-    vector<MenuItem*>& getMenuItems() {
-        return menuItems;
+    // Комментарий 22: Переопределенная функция выполнения действия для кофе
+    void action() const override {
+        // ... (вывод информации о выбранном виде кофе)
     }
 
-    ~Menu() {
-        for (size_t i = 0; i < menuItems.size(); ++i) {
-            delete menuItems[i];
-        }
+private:
+    float price;
+    string coffeeType;
+    string composition;
+
+    // Комментарий 23: Вспомогательная функция для вывода деталей о виде кофе
+    void showCoffeeDetails(const string& coffeeType, const string& composition, float coffeePrice) const {
+        // ... (вывод информации о виде кофе)
     }
 };
 
-void showSubMenu(MenuItem* item, int subMenuOption);
+// Комментарий 24: Класс Drink наследуется от абстрактного класса MenuItem
+class Drink : public MenuItem {
+public:
+    // Комментарий 25: Конструктор класса Drink с инициализацией имени, цены и состава
+    Drink(const string& name, float price, const string& composition)
+        : MenuItem(name), price(price), composition(composition) {}
 
-int main() {
-    vector<MenuItem*> menu;
-    menu.push_back(new Pizza());
-    menu.push_back(new Burger());
-    menu.push_back(new Pasta());
+    // Комментарий 26: Переопределенная функция отображения для напитка
+    void display() const override {
+        cout << "Напиток: " << name << " - Цена: " << price << " руб." << endl;
+    }
 
-    Menu mainMenu(menu);
+    // Комментарий 27: Переопределенная функция выполнения действия для напитка
+    void action() const override {
+        // ... (вывод информации о напитке в зависимости от выбора пользователя)
+    }
 
-    int selectedOption = 0;
-    int subMenuOption = 1;
-    char key;
+private:
+    float price;
+    string composition;
+};
 
-    do {
-        mainMenu.showMenu(selectedOption);
+// Комментарий 28: Класс SubMenu наследуется от абстрактного класса MenuItem
+class SubMenu : public MenuItem {
+public:
+    // Комментарий 29: Конструктор класса SubMenu с инициализацией имени
+    SubMenu(const string& name) : MenuItem(name) {}
 
-        key = _getch(); // wait for a key press without displaying it
+    // Комментарий 30: Переопределенная функция отображения для подменю
+    void display() const override {
+        cout << "Подменю: " << name << endl;
+    }
 
-        switch (key) {
-            case 72: // up arrow key
-                selectedOption = (selectedOption > 0) ? selectedOption - 1 : mainMenu.getMenuItems().size() - 1;
-                break;
-            case 80: // down arrow key
-                selectedOption = (selectedOption < mainMenu.getMenuItems().size() - 1) ? selectedOption + 1 : 0;
-                break;
-            case 13: // Enter key
-                showSubMenu(mainMenu.getMenuItems()[selectedOption], subMenuOption);
-                break;
+    // Комментарий 31: Функция для добавления элемента меню в подменю
+    void addMenuItem(MenuItem* item) {
+        items.push_back(item);
+    }
+
+    // Комментарий 32: Переопределенная функция выполнения действия для подменю
+    void action() const override {
+        // ... (обработка выбора пользователя и вызов соответствующего действия элемента меню)
+    }
+
+    // Комментарий 33: Деструктор класса SubMenu
+    ~SubMenu() override {
+        try {
+            for (const auto& item : items) {
+                delete item;
+            }
+        } catch (const std::bad_alloc& e) {
+            // Обработка исключения bad_alloc при удалении объекта в SubMenu
+            std::cerr << "Исключение bad_alloc при удалении объекта в SubMenu: " << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            // Обработка других исключений при удалении объекта в SubMenu
+            std::cerr << "Другое исключение при удалении объекта в SubMenu: " << e.what() << std::endl;
+        } catch (...) {
+            // Обработка неизвестного исключения при удалении объекта в SubMenu
+            std::cerr << "Неизвестное исключение при удалении объекта в SubMenu" << std::endl;
         }
+    }
 
-    } while (key != 27); // continue loop until Esc is pressed
+private:
+    // Комментарий 34: Вектор для хранения элементов меню в подменю
+    vector<MenuItem*> items;
+};
+
+// Комментарий 35: Основная функция main
+int main() {
+    // Комментарий 36: Создание объекта класса SubMenu - главного меню
+    SubMenu mainMenu("Главное меню");
+
+    // Комментарий 37-47: Создание объектов классов Dish, Coffee, Drink и добавление их в главное меню
+    // (Это заполняет главное меню различными блюдами, напитками и кофе)
+    // Далее, вызов функции action для отображения и взаимодействия с меню.
 
     return 0;
-}
-
-void showSubMenu(MenuItem* item, int subMenuOption) {
-    char key;
-    const string subMenuOptions[] = {"View Price", "View Composition", "Back to Main Menu"};
-
-    do {
-        system("cls");
-
-        item->displayDetails();
-
-        cout << "\nSub Menu:" << endl;
-        for (int i = 0; i < 3; ++i) {
-            cout << (i + 1 == subMenuOption ? "> " : "  ") << subMenuOptions[i] << endl;
-        }
-
-        key = _getch();
-
-        switch (key) {
-            case 72: // up arrow key
-                subMenuOption = (subMenuOption > 1) ? subMenuOption - 1 : 3;
-                break;
-            case 80: // down arrow key
-                subMenuOption = (subMenuOption < 3) ? subMenuOption + 1 : 1;
-                break;
-            case 13: // Enter key
-                switch (subMenuOption) {
-                    case 1:
-                        // View Price
-                        system("cls");
-                        cout << "Price: $10" << endl;
-                        cout << "\nPress any key to go back...";
-                        _getch();
-                        break;
-                    case 2:
-                        // View Composition
-                        system("cls");
-                        cout << "Composition: Dough, Tomato Sauce, Cheese, Toppings" << endl;
-                        cout << "\nPress any key to go back...";
-                        _getch();
-                        break;
-                    case 3:
-                        // Back to Main Menu
-                        break;
-                }
-                break;
-        }
-
-    } while (key != 27 && subMenuOption != 3);
 }
